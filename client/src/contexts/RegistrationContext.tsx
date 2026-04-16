@@ -6,7 +6,7 @@ interface RegistrationState {
   // UI 狀態
   isSidebarOpen: boolean;
   step: number;
-  currentView: 'registration' | 'dashboard-agent-aggregation';
+  currentView: 'registration' | 'dashboard-agent-aggregation' | 'dashboard-real-time-generation' | 'dashboard-load-forecasting' | 'dashboard-renewable-forecasting';
   registrationScreen: 'overview' | 'form';
   syncBusinessData: boolean;
 
@@ -34,7 +34,7 @@ interface RegistrationState {
 interface RegistrationActions {
   setIsSidebarOpen: (open: boolean) => void;
   setStep: (step: number) => void;
-  setCurrentView: (view: 'registration' | 'dashboard-agent-aggregation') => void;
+  setCurrentView: (view: 'registration' | 'dashboard-agent-aggregation' | 'dashboard-real-time-generation' | 'dashboard-load-forecasting' | 'dashboard-renewable-forecasting') => void;
   setRegistrationScreen: (screen: 'overview' | 'form') => void;
   startNewRegistration: () => void;
   goToRegistrationOverview: () => void;
@@ -110,7 +110,7 @@ const createInitialApplications = (): AppInfo[] => {
 export function RegistrationProvider({ children }: { children: ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [step, setStep] = useState(1);
-  const [currentView, setCurrentView] = useState<'registration' | 'dashboard-agent-aggregation'>('registration');
+  const [currentView, setCurrentView] = useState<'registration' | 'dashboard-agent-aggregation' | 'dashboard-real-time-generation' | 'dashboard-load-forecasting' | 'dashboard-renewable-forecasting'>('registration');
   const [registrationScreen, setRegistrationScreen] = useState<'overview' | 'form'>('overview');
   const [syncBusinessData, setSyncBusinessData] = useState(true);
 

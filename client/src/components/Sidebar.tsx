@@ -34,7 +34,7 @@ const navModules: ModuleItem[] = [
     subItems: [
       { id: 'dash-2-1', label: '2.1 代理人資源聚合管理', view: 'dashboard-agent-aggregation' },
       { id: 'dash-2-2', label: '2.2 通訊資料' },
-      { id: 'dash-2-3', label: '2.3 即時發電量監控' },
+      { id: 'dash-2-3', label: '2.3 即時發電量監控', view: 'dashboard-real-time-generation' },
       { id: 'dash-2-4', label: '2.4 MVRN 分配' },
     ],
   },
@@ -43,8 +43,8 @@ const navModules: ModuleItem[] = [
     icon: 'fas fa-gavel',
     label: '3. 申報計畫',
     subItems: [
-      { id: 'bid-3-1', label: '3.1 負載預測' },
-      { id: 'bid-3-2', label: '3.2 再生能源預測' },
+      { id: 'bid-3-1', label: '3.1 負載預測', view: 'dashboard-load-forecasting' },
+      { id: 'bid-3-2', label: '3.2 再生能源預測', view: 'dashboard-renewable-forecasting' },
       { id: 'bid-3-3', label: '3.3 COP 申報與公告' },
     ],
   },

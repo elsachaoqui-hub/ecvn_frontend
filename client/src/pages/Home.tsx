@@ -7,6 +7,9 @@ import Step3Storages from '@/components/Step3Storages';
 import ContractModal from '@/components/ContractModal';
 import StorageModal from '@/components/StorageModal';
 import DashboardAgentAggregation from '@/components/DashboardAgentAggregation';
+import DashboardRealTimeGeneration from '@/components/DashboardRealTimeGeneration';
+import DashboardLoadForecasting from '@/components/DashboardLoadForecasting';
+import DashboardRenewableForecasting from '@/components/DashboardRenewableForecasting';
 import RegistrationOverview from '@/components/RegistrationOverview';
 
 function MainContent() {
@@ -31,6 +34,9 @@ function MainContent() {
             </>
           )}
           {currentView === 'dashboard-agent-aggregation' && <DashboardAgentAggregation />}
+          {currentView === 'dashboard-real-time-generation' && <DashboardRealTimeGeneration />}
+          {currentView === 'dashboard-load-forecasting' && <DashboardLoadForecasting />}
+          {currentView === 'dashboard-renewable-forecasting' && <DashboardRenewableForecasting />}
         </main>
       </div>
 

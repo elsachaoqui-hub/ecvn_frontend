@@ -55,9 +55,15 @@ export default function Header() {
 
   const title = currentView === 'dashboard-agent-aggregation'
     ? '2.1 代理人資源聚合管理'
-    : registrationScreen === 'overview'
-      ? '1.1 註冊申請總覽'
-    : getStepTitle(step);
+    : currentView === 'dashboard-real-time-generation'
+      ? '2.3 即時發電量監控'
+      : currentView === 'dashboard-load-forecasting'
+        ? '3.1 負載預測'
+        : currentView === 'dashboard-renewable-forecasting'
+          ? '3.2 再生能源預測'
+          : registrationScreen === 'overview'
+            ? '1.1 註冊申請總覽'
+            : getStepTitle(step);
 
   return (
     <header
