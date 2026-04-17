@@ -2,12 +2,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
-
-env:
-  # 提前 opt-in Node.js 24 來執行 GitHub Actions（避免 2026/06 起被強制切換才發現相容性問題）
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    branches:
+      - main
+  workflow_dispatch:    # 允許手動觸發
 
 permissions:
   contents: read
@@ -21,8 +18,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_PAGES: 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,16 +25,20 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '22'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm vite build
+        env:
+          GITHUB_PAGES: 'true'
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
