@@ -125,6 +125,11 @@ export default function DashboardRenewableForecasting() {
     [agents, selectedAgentId]
   );
 
+  const aggregatedGenCapacity = useMemo(
+    () => selectedAgent?.genList.reduce((sum, asset) => sum + asset.capacityKw, 0) ?? 0,
+    [selectedAgent]
+  );
+
   const dailyForecast = useMemo(
     () => selectedAgent ? generateDailyForecast(selectedDate, selectedAgent) : null,
     [selectedAgent, selectedDate]
@@ -177,9 +182,9 @@ export default function DashboardRenewableForecasting() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.24em] text-slate-500">3.2 再生能源預測</p>
-              <h1 className="mt-2 text-3xl font-bold text-slate-900">每日再生能源發電預測申報</h1>
+              <h1 className="mt-2 text-3xl font-bold text-slate-900">每日再生能源發電聚合預測申報</h1>
               <p className="mt-2 text-sm text-slate-600">
-                聚合發電端電號，每15分鐘預測發電量並進行申報
+                代理人提交聚合預測發電量，系統會檢查是否超過總發電容量上限
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -222,7 +227,7 @@ export default function DashboardRenewableForecasting() {
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-sm text-slate-500">預測總發電量</p>
+              <p className="text-sm text-slate-500">預測總聚合發電量</p>
               <p className="mt-3 text-3xl font-bold text-slate-900">{dailyForecast.totalDailyGeneration.toFixed(1)} kWh</p>
             </div>
             <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
@@ -274,6 +279,14 @@ export default function DashboardRenewableForecasting() {
               ))}
             </div>
           </div>
+
+          <div className="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm text-slate-500">聚合申報容量上限</p>
+            <p className="mt-2 text-2xl font-bold text-slate-900">{aggregatedGenCapacity} kW</p>
+            <p className="mt-2 text-sm text-slate-600">
+              代理人提交的聚合發電量不得超過此總發電容量上限。
+            </p>
+          </div>
         </div>
       </section>
 
@@ -282,7 +295,7 @@ export default function DashboardRenewableForecasting() {
           <div>
             <p className="text-sm text-slate-500">預測發電量圖表</p>
             <h2 className="mt-1 text-xl font-bold text-slate-900">
-              {format(selectedDate, "yyyy年MM月dd日", { locale: zhTW })} 再生能源發電預測曲線
+              {format(selectedDate, "yyyy年MM月dd日", { locale: zhTW })} 再生能源聚合發電預測曲線
             </h2>
           </div>
           <div className="rounded-3xl bg-slate-100 px-4 py-2 text-sm text-slate-600">
@@ -328,8 +341,8 @@ export default function DashboardRenewableForecasting() {
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm text-slate-500">詳細申報數據</p>
-            <h2 className="mt-1 text-xl font-bold text-slate-900">每15分鐘預測發電明細</h2>
+            <p className="text-sm text-slate-500">聚合申報數據預覽</p>
+            <h2 className="mt-1 text-xl font-bold text-slate-900">每15分鐘聚合預測發電明細</h2>
           </div>
           <div className="rounded-3xl bg-slate-100 px-4 py-2 text-sm text-slate-600">
             共 {dailyForecast.forecastData.length} 筆資料
@@ -341,8 +354,7 @@ export default function DashboardRenewableForecasting() {
             <thead className="bg-slate-100 text-slate-600">
               <tr>
                 <th className="px-4 py-3">時間</th>
-                <th className="px-4 py-3">總預測發電量 (kW)</th>
-                <th className="px-4 py-3">發電端明細</th>
+                <th className="px-4 py-3">聚合預測發電量 (kW)</th>
               </tr>
             </thead>
             <tbody className="bg-white">
@@ -350,27 +362,44 @@ export default function DashboardRenewableForecasting() {
                 <tr key={index} className="border-t border-slate-100 hover:bg-slate-50">
                   <td className="px-4 py-4 font-medium text-slate-700">{data.timestamp}</td>
                   <td className="px-4 py-4 text-slate-900 font-bold">{data.totalGenerationKw} kW</td>
-                  <td className="px-4 py-4">
-                    <div className="space-y-1">
-                      {data.details.map((detail, detailIndex) => (
-                        <div key={detailIndex} className="flex justify-between items-center text-xs">
-                          <div className="flex items-center gap-2">
-                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${getRenewableTypeColor(detail.renewableType)}`}>
-                              {detail.renewableType}
-                            </span>
-                            <span className="text-slate-600">
-                              <span className="font-mono">{detail.meterNo}</span> - {detail.assetName}
-                            </span>
-                          </div>
-                          <span className="font-medium text-slate-900">{detail.generationKw} kW</span>
-                        </div>
-                      ))}
-                    </div>
-                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        <div className="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-6">
+          <div>
+            <p className="text-sm font-medium text-slate-700">聚合申報發電資訊</p>
+
+            {/* 發電端明細表格 */}
+            <div className="mt-4 rounded-lg border border-slate-200 bg-white overflow-hidden">
+              <table className="min-w-full border-separate border-spacing-0 text-left text-sm">
+                <thead className="bg-slate-100 text-slate-600">
+                  <tr>
+                    <th className="px-3 py-2 text-xs">表號</th>
+                    <th className="px-3 py-2 text-xs">發電端名稱</th>
+                    <th className="px-3 py-2 text-xs">容量 (kW)</th>
+                    <th className="px-3 py-2 text-xs">轉供比例 (%)</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white">
+                  {selectedAgent.genList.map((genAsset, index) => (
+                    <tr key={index} className="border-t border-slate-100">
+                      <td className="px-3 py-2 font-mono text-xs text-slate-700">{genAsset.meterNo ?? '未知'}</td>
+                      <td className="px-3 py-2 text-xs text-slate-700">{genAsset.name}</td>
+                      <td className="px-3 py-2 text-xs text-slate-900 font-medium">{genAsset.capacityKw}</td>
+                      <td className="px-3 py-2 text-xs text-slate-900 font-medium">{genAsset.transferRatio ?? 100}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <p className="mt-4 text-sm text-slate-500">
+              代理人只需填寫聚合發電量，系統會檢查是否超過總發電容量上限 {aggregatedGenCapacity} kW。
+            </p>
+          </div>
         </div>
 
         <div className="mt-6 flex justify-between items-center">
@@ -379,7 +408,6 @@ export default function DashboardRenewableForecasting() {
           </p>
           <div className="flex gap-3">
             <Button variant="outline">下載申報表</Button>
-            <Button>提交申報</Button>
           </div>
         </div>
       </section>
